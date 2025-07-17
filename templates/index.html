@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/email.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+</head>
+
+<body>
+    <h1>监听网站变化</h1>
+
+    <div class="tab-nav">
+        <button class="tab-button active" onclick="switchTab('new-task')">新建任务</button>
+        <button class="tab-button" onclick="switchTab('task-list')">任务列表</button>
+        <button class="tab-button" onclick="switchTab('settings')">设置</button>
+    </div>
+
+    <!-- 新建任务标签页 -->
+    <div id="new-task" class="tab-content active">
+        <div class="container">
+            <div class="input-group">
+                <label>监控模式：</label>
+                <select id="monitor_mode" onchange="handleModeChange()">
+                    <option value="website">网站模式</option>
+                    <option value="github">GitHub模式</option>
+                    <option value="rss">RSS模式</option>
+                </select>
+            </div>
+            <div id="website_input" class="input-group">
+                <label>网站地址：</label>
+                <input type="text" id="monitor_website" placeholder="请输入网站地址...">
+            </div>
+            <div id="github_input" class="input-group" style="display:none">
+                <label>GitHub仓库：</label>
+                <input type="text" id="monitor_github" placeholder="请输入GitHub仓库地址...">
+            </div>
+            <div id="rss_input" class="input-group" style="display:none">
+                <label>RSS地址：</label>
+                <input type="text" id="monitor_rss" placeholder="请输入RSS订阅链接...">
+            </div>
+            <div class="time_group">
+                <label>监听时间间隔：</label>
+                <input type="text" id="time" name="time" value="1">
+                <label>分钟</label>
+            </div>
+
+            <div class="compare_mode">
+                <label>是否启用对比模式：</label>
+                <input type="radio" id="compare_mode_yes" name="compare_mode" value="1" onchange="handleCompareMode()">
+                <label>是</label>
+                <input type="radio" id="compare_mode_no" name="compare_mode" value="0" onchange="handleCompareMode()">
+                <label>否</label>
+            </div>
+
+            <div id="send_mail_group" class="send_mail_group" style="display: none;">
+                <label>有变化时是否发送邮件：</label>
+                <input type="radio" id="send_mail_yes" name="send_mail" value="1" onchange="handleSendMail()">
+                <label>是</label>
+                <input type="radio" id="send_mail_no" name="send_mail" value="0" onchange="handleSendMail()">
+                <label>否</label>
+            </div>
+
+            <div id="mail_group" class="mail_group" style="display: none;">
+                <div class="email-input-container">
+                    <label>邮件地址：</label>
+                    <div id="email_addresses">
+                        <div class="email-input-row">
+                            <input type="email" placeholder="请输入邮件地址...">
+                            <button type="button" class="btn-small"
+                                onclick="addEmailField('email_addresses')">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="email-input-container">
+                    <label>抄送：</label>
+                    <div id="email_cc">
+                        <div class="email-input-row">
+                            <input type="email" placeholder="请输入抄送地址...">
+                            <button type="button" class="btn-small" onclick="addEmailField('email_cc')">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="addTask()">添加任务</button>
+        </div>
+    </div>
+
+    <!-- 任务列表标签页 -->
+    <div id="task-list" class="tab-content">
+        <div class="task-list">
+            {% if tasks %}
+            {% for task in tasks %}
+            <div class="task-item">
+                <div class="task-info">
+                    <div>监控地址：{{ task.url }}</div>
+                    <div>监控间隔：{{ task.interval }}分钟</div>
+                    <div>状态：{{ task.status }}</div>
+                </div>
+                <div class="task-actions">
+                    <button onclick="pauseTask('{{ task.id }}')">暂停</button>
+                    <button onclick="deleteTask('{{ task.id }}')">删除</button>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>暂无监控任务</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 设置标签页 -->
+    <div id="settings" class="tab-content">
+        <div class="settings-group">
+            <h3>邮件设置</h3>
+            <div class="input-group">
+                <label>SMTP服务器：</label>
+                <input type="text" id="smtp_server" placeholder="smtp.example.com">
+            </div>
+            <div class="input-group">
+                <label>SMTP端口：</label>
+                <input type="text" id="smtp_port" value="587">
+            </div>
+            <div class="input-group">
+                <label>邮箱账号：</label>
+                <input type="text" id="email_account" placeholder="your@email.com">
+            </div>
+            <div class="input-group">
+                <label>邮箱密码：</label>
+                <input type="password" id="email_password">
+            </div>
+            <button onclick="saveEmailSettings()">保存邮件设置</button>
+        </div>
+
+        <div class="settings-group">
+            <h3>AI设置</h3>
+            <div class="input-group">
+                <label>AI模型：</label>
+                <select id="ai_model" onchange="handleAIModelChange()">
+                    <option value="chatgpt">ChatGPT</option>
+                    <option value="gemini">Gemini</option>
+                    <option value="volcano">火山引擎</option>
+                    <option value="deepseek">Deepseek</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>API Token：</label>
+                <input type="password" id="ai_api_token" placeholder="请输入API Token...">
+            </div>
+            <div class="input-group">
+                <label>API URL：</label>
+                <input type="text" id="ai_api_url" placeholder="请输入API URL...">
+            </div>
+            <button onclick="saveAISettings()">保存AI设置</button>
+        </div>
+
+        <div class="settings-group">
+            <h3>邮件内容模板</h3>
+            <div class="input-group">
+                <label>邮件主题模板：</label>
+                <input type="text" id="email_subject_template" placeholder="例如：[{{website_name}}] 网站更新通知">
+            </div>
+            <div class="input-group">
+                <label>邮件正文模板：</label>
+                <textarea id="email_body_template" rows="6" placeholder="可用变量：
+{{website_name}} - 网站名称
+{{url}} - 监控的URL
+{{change_time}} - 变化时间
+{{changes}} - 变化内容"></textarea>
+            </div>
+            <div class="input-group">
+                <label>AI分析结果模板：</label>
+                <textarea id="ai_analysis_template" rows="4" placeholder="在此处添加AI分析结果的展示模板"></textarea>
+            </div>
+            <button onclick="saveEmailTemplate()">保存模板设置</button>
+        </div>
+    </div>
+</body>
+
+
+</html>
