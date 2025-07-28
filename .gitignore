@@ -12,3 +12,5 @@ wheels/
 website_snapshots/
 config/
 *.txt
+*.gif
+test_*.py

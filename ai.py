@@ -1,4 +1,3 @@
-import os
 from openai import OpenAI
 
 DEFAULT_PROMPT = """请你作为项目经理的角色，判断变动、更新的内容是否需要人工进行 review，具体规则如下，结果以 JSON 格式返回，字段包括 review_needed、changed_content 和 review_reason。
@@ -12,10 +11,10 @@ DEFAULT_PROMPT = """请你作为项目经理的角色，判断变动、更新的
 # DEFAULT_API_URL = "https://ark.cn-beijing.volces.com/api/v3"
 
 class AiClient:
-    def __init__(self, model: str, diff: str, base_url: str | None = None):
-        self.client = OpenAI(
+    def __init__(self, model: str, diff: str, api_token: str, base_url: str | None = None):
+        self.client = OpenAI( 
             base_url=base_url,
-            api_key=os.environ.get("HS_API_KEY"),
+            api_key=api_token
         )
         self.model = model
         self.diff = diff
@@ -28,30 +27,3 @@ class AiClient:
             ],
         )
         return response.choices[0].message.content
-
-# with open("diff.txt", "r", encoding="utf-8") as f:
-#     content = f.read()
-
-# client = OpenAI(
-#     base_url="https://ark.cn-beijing.volces.com/api/v3",
-#     api_key=os.environ.get("HS_API_KEY"),
-# )
-
-# response = client.chat.completions.create(
-#     model="ep-20250716095151-bw4sm",
-#     messages=[
-#         {
-#             "role": "user",
-#             "content": [
-#                 {
-#                     "type": "text",
-#                     "text": DEFAULT_PROMPT,
-#                 },
-#                 {"type": "text", "text": content},
-#             ],
-#         }
-#     ],
-# )
-
-# # print(response.choices[0].message.content)
-# print(response)

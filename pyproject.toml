@@ -9,6 +9,7 @@ dependencies = [
     "feedparser>=6.0.11",
     "flask>=3.1.1",
     "openai>=1.96.1",
+    "pyinstaller>=6.14.2",
     "requests>=2.32.4",
 ]
 

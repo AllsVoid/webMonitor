@@ -17,6 +17,21 @@ function handleSendMail() {
     mailGroup.style.display = sendMail === '1' ? 'flex' : 'none';
 }
 
+// 邮件服务类型切换
+function handleEmailServiceChange() {
+    const serviceType = document.getElementById('email_service_type').value;
+    const sendcloudSettings = document.getElementById('sendcloud_settings');
+    const smtpSettings = document.getElementById('smtp_settings');
+    
+    if (serviceType === 'sendcloud') {
+        sendcloudSettings.style.display = 'block';
+        smtpSettings.style.display = 'none';
+    } else {
+        sendcloudSettings.style.display = 'none';
+        smtpSettings.style.display = 'block';
+    }
+}
+
 // 邮件地址字段管理
 function addEmailField(containerId) {
     const container = document.getElementById(containerId);
@@ -64,14 +79,45 @@ function getCCAddresses() {
 
 // 保存邮件设置
 function saveEmailSettings() {
+    const serviceType = document.getElementById('email_service_type').value;
+    
     const settings = {
-        smtp_server: document.getElementById('smtp_server').value,
-        smtp_port: document.getElementById('smtp_port').value,
-        email_account: document.getElementById('email_account').value,
-        email_password: document.getElementById('email_password').value,
-        api_key: document.getElementById('api_key').value
+        service_type: serviceType
     };
     
+    if (serviceType === 'sendcloud') {
+        settings.flag = "1";
+        settings.api_user = document.getElementById('api_user').value;
+        settings.api_key = document.getElementById('api_key').value;
+        settings.from_email = document.getElementById('from_email').value;
+        settings.from_name = document.getElementById('from_name').value;
+    } else {
+        settings.flag = "0";
+        settings.smtp_server = document.getElementById('smtp_server').value;
+        settings.smtp_port = document.getElementById('smtp_port').value;
+        settings.email_account = document.getElementById('email_account').value;
+        settings.email_password = document.getElementById('email_password').value;
+    }
+    
     console.log('保存邮件设置:', settings);
-    // TODO: 发送到后端保存
+      // 发送到后端保存
+    fetch('/api/settings/email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(settings)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('邮件设置保存成功');
+        } else {
+            alert('邮件设置保存失败：' + (data.message || '未知错误'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('保存失败: ' + error.message);
+    });
 }

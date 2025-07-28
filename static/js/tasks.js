@@ -105,7 +105,7 @@ function deleteTask(taskId) {
 
 // AI模型切换处理
 function handleAIModelChange() {
-    const model = document.getElementById('ai_model').value;
+    const model = document.getElementById('ai_choice').value;
     const apiUrlInput = document.getElementById('ai_api_url');
     
     // 根据不同的AI模型设置默认API URL
@@ -117,7 +117,7 @@ function handleAIModelChange() {
             apiUrlInput.value = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
             break;
         case 'volcano':
-            apiUrlInput.value = 'https://open.volcengineapi.com/v1/chat/completions';
+            apiUrlInput.value = 'https://ark.cn-beijing.volces.com/api/v3';
             break;
         case 'deepseek':
             apiUrlInput.value = 'https://api.deepseek.com/v1/chat/completions';
@@ -128,9 +128,9 @@ function handleAIModelChange() {
 // 保存AI设置
 function saveAISettings() {
     const settings = {
-        model: document.getElementById('ai_model').value,
-        apiToken: document.getElementById('ai_api_token').value,
-        apiUrl: document.getElementById('ai_api_url').value
+        'model': document.getElementById('ai_model').value,
+        'api_token': document.getElementById('ai_api_token').value,
+        'api_url': document.getElementById('ai_api_url').value
     };
 
     fetch('/api/settings/ai', {
@@ -141,16 +141,14 @@ function saveAISettings() {
         body: JSON.stringify(settings)
     })
     .then(response => response.json())
-    .then(data => {
-        if (data.success) {
+    .then(result => {
+        if (result.message) {
             alert('AI设置保存成功！');
-        } else {
-            alert('保存失败：' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('保存失败，请检查网络连接');
+        alert('保存AI设置时发生错误');
     });
 }
 

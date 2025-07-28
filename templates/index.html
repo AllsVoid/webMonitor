@@ -116,38 +116,72 @@
     </div>
 
     <!-- 设置标签页 -->
-    <div id="settings" class="tab-content">
-        <div class="settings-group">
+    <div id="settings" class="tab-content">        <div class="settings-group">
             <h3>邮件设置</h3>
             <div class="input-group">
-                <label>SMTP服务器：</label>
-                <input type="text" id="smtp_server" placeholder="smtp.example.com">
+                <label>邮件服务类型：</label>
+                <select id="email_service_type" onchange="handleEmailServiceChange()">
+                    <option value="sendcloud">SendCloud API</option>
+                    <option value="smtp">SMTP服务器</option>
+                </select>
             </div>
-            <div class="input-group">
-                <label>SMTP端口：</label>
-                <input type="text" id="smtp_port" value="587">
+            
+            <!-- SendCloud API 设置 -->
+            <div id="sendcloud_settings">
+                <div class="input-group">
+                    <label>API USER：</label>
+                    <input type="text" id="api_user" placeholder="SendCloud API USER">
+                </div>
+                <div class="input-group">
+                    <label>API KEY：</label>
+                    <input type="password" id="api_key" placeholder="SendCloud API KEY">
+                </div>
+                <div class="input-group">
+                    <label>发件人邮箱：</label>
+                    <input type="text" id="from_email" placeholder="service@yourdomain.com">
+                </div>
+                <div class="input-group">
+                    <label>发件人名称：</label>
+                    <input type="text" id="from_name" placeholder="网站变化通知">
+                </div>
             </div>
-            <div class="input-group">
-                <label>邮箱账号：</label>
-                <input type="text" id="email_account" placeholder="your@email.com">
-            </div>
-            <div class="input-group">
-                <label>邮箱密码：</label>
-                <input type="password" id="email_password">
+            
+            <!-- SMTP 设置 -->
+            <div id="smtp_settings" style="display:none">
+                <div class="input-group">
+                    <label>SMTP服务器：</label>
+                    <input type="text" id="smtp_server" placeholder="smtp.example.com">
+                </div>
+                <div class="input-group">
+                    <label>SMTP端口：</label>
+                    <input type="text" id="smtp_port" value="587">
+                </div>
+                <div class="input-group">
+                    <label>邮箱账号：</label>
+                    <input type="text" id="email_account" placeholder="your@email.com">
+                </div>
+                <div class="input-group">
+                    <label>邮箱密码：</label>
+                    <input type="password" id="email_password">
+                </div>
             </div>
             <button onclick="saveEmailSettings()">保存邮件设置</button>
         </div>
 
         <div class="settings-group">
-            <h3>AI设置</h3>
+            <h3>AI 设置</h3>
             <div class="input-group">
-                <label>AI模型：</label>
-                <select id="ai_model" onchange="handleAIModelChange()">
+                <label>AI 选择</label>
+                <select id="ai_choice" onchange="handleAIModelChange()">
                     <option value="chatgpt">ChatGPT</option>
                     <option value="gemini">Gemini</option>
                     <option value="volcano">火山引擎</option>
                     <option value="deepseek">Deepseek</option>
                 </select>
+            </div>
+            <div class="input-group">
+                <lable>AI 模型</lable>
+                <input type="text" id="ai_model" placeholder="请输入 AI 模型，如 gpt-4o...">
             </div>
             <div class="input-group">
                 <label>API Token：</label>
@@ -157,7 +191,7 @@
                 <label>API URL：</label>
                 <input type="text" id="ai_api_url" placeholder="请输入API URL...">
             </div>
-            <button onclick="saveAISettings()">保存AI设置</button>
+            <button onclick="saveAISettings()">保存 AI 设置</button>
         </div>
 
         <div class="settings-group">
