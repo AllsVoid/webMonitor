@@ -133,9 +133,9 @@ def save_email_settings():
         return jsonify({'success': False, 'message': f'保存失败: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    import webbrowser
-    import threading
-    import time
+    # import webbrowser
+    # import threading
+    # import time
     
     # 创建必要的目录
     os.makedirs('website_snapshots', exist_ok=True)
@@ -145,20 +145,20 @@ if __name__ == '__main__':
     print("📋 正在启动 Web 服务器...")
     
     # 在单独线程中启动浏览器
-    def open_browser():
-        time.sleep(1.5)  # 等待服务器启动
-        url = "http://127.0.0.1:5000"
-        print(f"🌐 正在打开浏览器: {url}")
-        webbrowser.open(url)
+    # def open_browser():
+    #     time.sleep(1.5)  # 等待服务器启动
+    #     url = "http://127.0.0.1:5000"
+    #     print(f"🌐 正在打开浏览器: {url}")
+    #     webbrowser.open(url)
     
-    threading.Thread(target=open_browser, daemon=True).start()
+    # threading.Thread(target=open_browser, daemon=True).start()
     
     print("✅ 服务器已启动，访问地址: http://127.0.0.1:5000")
     print("💡 提示: 关闭此窗口将停止服务")
     print("-" * 50)
     
     try:
-        app.run(host='127.0.0.1', port=5000, debug=False)
+        app.run(host='0.0.0.0', port=5000, debug=False)
     except KeyboardInterrupt:
         print("\n👋 服务已停止")
     except Exception as e:

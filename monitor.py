@@ -42,7 +42,7 @@ class BaseMonitor:
                 self._check_changes()
             except Exception as e:
                 print(f"监控出错: {str(e)}")
-            time.sleep(self.interval * 10)
+            time.sleep(self.interval * 60)
 
     def _check_changes(self):
         raise NotImplementedError
