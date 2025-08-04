@@ -68,8 +68,20 @@ def pause_task(task_id):
         return jsonify({'message': '任务已暂停'})
     return jsonify({'error': '任务不存在'}), 404
 
-@app.route('/api/settings/ai', methods=['POST'])
-def save_ai_settings():
+@app.route('/api/settings/ai', methods=['GET', 'POST'])
+def ai_settings():
+    if request.method == 'GET':
+        try:
+            settings_file = 'config/ai_settings.json'
+            if os.path.exists(settings_file):
+                with open(settings_file, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                return jsonify({'success': True, 'settings': settings})
+            return jsonify({'success': True, 'settings': {}})
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)}), 500
+    
+    # POST 处理
     try:
         data = request.get_json()
         if not data:
@@ -90,8 +102,20 @@ def save_ai_settings():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/settings/email', methods=['POST'])
-def save_email_settings():
+@app.route('/api/settings/email', methods=['GET', 'POST'])
+def email_settings():
+    if request.method == 'GET':
+        try:
+            settings_file = 'config/email_settings.json'
+            if os.path.exists(settings_file):
+                with open(settings_file, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                return jsonify({'success': True, 'settings': settings})
+            return jsonify({'success': True, 'settings': {}})
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)}), 500
+            
+    # POST 处理
     try:
         data = request.get_json()
         print(data)

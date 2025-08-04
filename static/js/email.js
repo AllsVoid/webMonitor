@@ -1,4 +1,40 @@
- // 邮件字段处理
+ // 加载邮件设置
+function loadEmailSettings() {
+    fetch('/api/settings/email')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.settings) {
+                const settings = data.settings;
+                
+                // 设置服务类型
+                const serviceType = settings.service_type || 'sendcloud';
+                document.getElementById('email_service_type').value = serviceType;
+                handleEmailServiceChange();
+                
+                if (serviceType === 'sendcloud') {
+                    document.getElementById('api_user').value = settings.api_user || '';
+                    document.getElementById('api_key').value = settings.api_key || '';
+                    document.getElementById('from_email').value = settings.from_email || '';
+                    document.getElementById('from_name').value = settings.from_name || '';
+                } else {
+                    document.getElementById('smtp_server').value = settings.smtp_server || '';
+                    document.getElementById('smtp_port').value = settings.smtp_port || '587';
+                    document.getElementById('email_account').value = settings.email_account || '';
+                    document.getElementById('email_password').value = settings.email_password || '';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('加载邮件设置失败:', error);
+        });
+}
+
+// 页面加载完成后自动加载设置
+document.addEventListener('DOMContentLoaded', function() {
+    loadEmailSettings();
+});
+
+// 邮件字段处理
 function handleCompareMode() {
     const sendMailGroup = document.getElementById('send_mail_group');
     const compareMode = document.querySelector('input[name="compare_mode"]:checked').value;
