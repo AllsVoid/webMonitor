@@ -5,23 +5,18 @@ function handleAIModelChange() {
     const aiApiUrl = document.getElementById('ai_api_url');
     
     // 根据选择的 AI 设置默认值
-    switch(aiChoice) {
-        case 'chatgpt':
-            aiModel.value = aiModel.value || 'gpt-4';
-            aiApiUrl.value = aiApiUrl.value || 'https://api.openai.com/v1/chat/completions';
-            break;
-        case 'gemini':
-            aiModel.value = aiModel.value || 'gemini-pro';
-            aiApiUrl.value = aiApiUrl.value || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
-            break;
-        case 'volcano':
-            aiModel.value = aiModel.value || 'chatglm3-6b';
-            aiApiUrl.value = aiApiUrl.value || 'https://api.volcengine.com/ml-platform/v1/model/invoke';
-            break;
-        case 'deepseek':
-            aiModel.value = aiModel.value || 'deepseek-chat';
-            aiApiUrl.value = aiApiUrl.value || 'https://api.deepseek.com/v1/chat/completions';
-            break;
+    if (aiChoice === 'chatgpt') {
+        aiModel.value = 'gpt-4o';
+        aiApiUrl.value = 'https://api.openai.com/v1/chat/completions';
+    } else if (aiChoice === 'gemini') {
+        aiModel.value = 'gemini-2.5-flash';
+        aiApiUrl.value = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+    } else if (aiChoice === 'volcano') {
+        aiModel.value = '';
+        aiApiUrl.value = 'https://ark.cn-beijing.volces.com/api/v3';
+    } else if (aiChoice === 'deepseek') {
+        aiModel.value = 'deepseek-chat';
+        aiApiUrl.value = 'https://api.deepseek.com';
     }
 }
 
@@ -32,20 +27,25 @@ function loadAISettings() {
         .then(data => {
             if (data.success && data.settings) {
                 const settings = data.settings;
-                
+
                 // 设置 AI 选择
-                if (settings.model) {
-                    // 根据模型名称推断 AI 类型
-                    let aiChoice = 'chatgpt';
-                    if (settings.model.includes('gemini')) {
-                        aiChoice = 'gemini';
-                    } else if (settings.model.includes('chatglm')) {
-                        aiChoice = 'volcano';
-                    } else if (settings.model.includes('deepseek')) {
-                        aiChoice = 'deepseek';
+                if (settings.aiChoice) {
+                    switch(settings.aiChoice) {
+                        case 'chatgpt':
+                            document.getElementById('ai_choice').value = 'chatgpt';
+                            break;
+                        case 'gemini':
+                            document.getElementById('ai_choice').value = 'gemini';
+                            break;
+                        case 'volcano':
+                            document.getElementById('ai_choice').value = 'volcano';
+                            break;
+                        case 'deepseek':
+                            document.getElementById('ai_choice').value = 'deepseek';
+                            break;
                     }
-                    
-                    document.getElementById('ai_choice').value = aiChoice;
+                }else {
+                    document.getElementById('ai_choice').value = 'chatgpt';
                 }
                 
                 // 填充其他字段
@@ -54,7 +54,7 @@ function loadAISettings() {
                 document.getElementById('ai_api_url').value = settings.api_url || '';
                 
                 // 触发模型变更处理
-                handleAIModelChange();
+                // handleAIModelChange();
             }
         })
         .catch(error => {
@@ -65,6 +65,7 @@ function loadAISettings() {
 // 保存 AI 设置
 function saveAISettings() {
     const settings = {
+        aiChoice: document.getElementById('ai_choice').value,
         model: document.getElementById('ai_model').value,
         api_token: document.getElementById('ai_api_token').value,
         api_url: document.getElementById('ai_api_url').value

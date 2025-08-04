@@ -88,6 +88,7 @@ def ai_settings():
             return jsonify({'error': '无效的请求数据'}), 400
             
         settings = {
+            'aiChoice': data.get('aiChoice'),
             'model': data.get('model'),
             'api_token': data.get('api_token'),
             'api_url': data.get('api_url')
